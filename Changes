@@ -1,5 +1,8 @@
 Revision history for Perl extension WWW::Mailinator.
 
+0.02  Jul 25 2005
+	- Mailinator.net altered website's layout, patched script accordingly
+	- Depreciated HTML::TableExtract methods removed
 0.01  Dec 11 2004
 	- original version; 
 

@@ -14,4 +14,4 @@ BEGIN { use_ok('WWW::Mailinator') };
 # its man page ( perldoc Test::More ) for help writing this test script.
 
 my $mailbox = WWW::Mailinator->new();
-ok(defined($mailbox))
+ok(defined($mailbox));

@@ -1,7 +1,7 @@
 Changes
+lib/WWW/Mailinator.pm
 Makefile.PL
 MANIFEST
+META.yml			Module meta-data (added by MakeMaker)
 README
 t/WWW-Mailinator.t
-lib/WWW/Mailinator.pm
-META.yml                                 Module meta-data (added by MakeMaker)

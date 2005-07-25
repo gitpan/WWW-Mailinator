@@ -18,9 +18,10 @@ the message(s).
   $mailbox->login('b10m');
   
   if($mailbox->count) {
-    foreach my $email ($mailbox->messages) {
-      print $email->{from}.": ".$email->{subject}."\n";
-      print $mailbox->retrieve($email->{num})."\n\n";
+     foreach my $email ($mailbox->messages) {
+        print $email->{from}.": ".$email->{subject}."\n";
+        print $mailbox->retrieve($email->{num})."\n\n";
+     }
   }
 
 =head2 METHODS
@@ -68,7 +69,7 @@ M. Blom, E<lt>b10m@perlmonk.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2004 by M. Blom
+Copyright (C) 2004,2005 by M. Blom
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
@@ -78,13 +79,13 @@ it under the same terms as Perl itself.
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use Carp;
 use LWP::Simple;
 use HTML::TableExtract;
 
-my $BASEURL = 'http://www.mailinator.net/mailinator';
+my $BASEURL = 'http://www.mailinator.net/mailinator/';
 
 sub new {
    my $class = shift;
@@ -104,8 +105,8 @@ sub login {
  					keep_html => 1
 				     );
       $te->parse($content);
-      foreach my $ts ($te->table_states) {
-         foreach my $row ($ts->rows) {
+      foreach my $t ($te->tables) {
+         foreach my $row ($t->rows) {
 	    if(@$row[1]) {
                @$row[0] =~ s|^<b>(.*)</b>$|$1|; # Greedy, like we want ;)
                if(@$row[1] =~ m|^<a href=([^>]+)>(.+)</a>$|) {
@@ -139,15 +140,13 @@ sub retrieve {
    my ($self, $mail) = @_;
    $mail ||= '0';
    if(my $content = get($self->{messages}->[$mail]->{url})) {
-      my $te = new HTML::TableExtract(depth=>1, count=>2, keep_html=>1);
+      my $te = new HTML::TableExtract(keep_html=>1);
       $te->parse($content);
 
-      # Examine all matching tables
-      foreach my $ts ($te->table_states) {
-         foreach my $row ($ts->rows) {
-            return @$row[3];
-         }
-      }
+      my $table = $te->table(0,1);
+      my $mail = $table->cell(3,0);
+         $mail =~ s/^.+?<br><br><br>//m;
+      return $mail;
    }
    else {
       Carp::croak "Couldn't fetch Mailinator page";
