@@ -79,13 +79,13 @@ it under the same terms as Perl itself.
 use strict;
 use warnings;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use Carp;
 use LWP::Simple;
 use HTML::TableExtract;
 
-my $BASEURL = 'http://www.mailinator.net/mailinator/';
+my $BASEURL = 'http://www.mailinator.com';
 
 sub new {
    my $class = shift;
@@ -99,7 +99,7 @@ sub login {
    my ($self, $username) = @_;
    Carp::croak 'Username must be specified' if(!$username);
    $self->{username} = $username;
-   if(my $content = get($BASEURL.'/CheckMail.do?email='.$self->{username}) ) {
+   if(my $content = get($BASEURL.'/mailinator/maildir.jsp?email='.$self->{username}) ) {
       my $te = new HTML::TableExtract( 
 					headers => [qw(FROM SUBJECT)],
  					keep_html => 1
@@ -111,7 +111,7 @@ sub login {
                @$row[0] =~ s|^<b>(.*)</b>$|$1|; # Greedy, like we want ;)
                if(@$row[1] =~ m|^<a href=([^>]+)>(.+)</a>$|) {
                   push @{$self->{messages}}, { from    => @$row[0],
-					       url     => $1,
+					       url     => $BASEURL.$1,
                                                subject => $2,
 					       num     => $self->{count}
                                              };
@@ -143,9 +143,11 @@ sub retrieve {
       my $te = new HTML::TableExtract(keep_html=>1);
       $te->parse($content);
 
-      my $table = $te->table(0,1);
-      my $mail = $table->cell(3,0);
+      my $mail;
+      if(my $table = $te->table(1,2)) {
+         $mail = $table->cell(0,0);
          $mail =~ s/^.+?<br><br><br>//m;
+      } 
       return $mail;
    }
    else {

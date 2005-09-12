@@ -1,5 +1,7 @@
 Revision history for Perl extension WWW::Mailinator.
 
+0.04  Sep 12 2005
+        - Site was altered once again ... patched.
 0.03  Jul 29 2005
         - Removed useless requirement of Perl 5.8.6 *Doh!*
 0.02  Jul 25 2005
